@@ -1,26 +1,30 @@
 import connection from '../db.js';
 
-export async function addProduct(name, description, price, stock) {
+// Ajouter un produit
+export async function addProduct(productName, description, price, stock, category, barcode, status) {
     const [result] = await connection.execute(
-        'INSERT INTO products (name, description, price, stock) VALUES (?, ?, ?, ?)',
-        [name, description, price, stock]
+        'INSERT INTO products (product_name, description, price, stock, category, barcode, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [productName, description, price, stock, category, barcode, status]
     );
     return result;
 }
 
+// Lister les produits
 export async function listProducts() {
     const [rows] = await connection.execute('SELECT * FROM products');
     console.log(rows);
 }
 
-export async function updateProduct(productId, name, description, price, stock) {
+// Mettre à jour un produit
+export async function updateProduct(productId, productName, description, price, stock, category, barcode, status) {
     const [result] = await connection.execute(
-        'UPDATE products SET name = ?, description = ?, price = ?, stock = ? WHERE id = ?',
-        [name, description, price, stock, productId]
+        'UPDATE products SET product_name = ?, description = ?, price = ?, stock = ?, category = ?, barcode = ?, status = ? WHERE id = ?',
+        [productName, description, price, stock, category, barcode, status, productId]
     );
     return result;
 }
 
+// Supprimer un produit
 export async function deleteProduct(productId) {
     const [result] = await connection.execute('DELETE FROM products WHERE id = ?', [productId]);
     return result;
