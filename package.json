@@ -1,0 +1,12 @@
+{
+  "name": "abc_app",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "inquirer": "^9.0.0"
+  }
+}
