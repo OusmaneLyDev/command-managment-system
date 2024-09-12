@@ -1,9 +1,9 @@
 import connection from '../db.js';
 
-export async function addOrder(customerId, orderDate, deliveryAddress, trackNumber, status ) {
+export async function addOrder(customerId, date, deliveryAddress, trackNumber, status ) {
     const [result] = await connection.execute(
-        'INSERT INTO orders (customer_id, order_date, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)',
-        [customerId, orderDate, deliveryAddress, trackNumber, status]
+        'INSERT INTO orders (customer_id, date, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)',
+        [customerId, date, deliveryAddress, trackNumber, status]
     );
     return result;
 }
@@ -13,10 +13,10 @@ export async function listOrders() {
     console.log(rows);
 }
 
-export async function updateOrder(orderId, customerId, orderDate, deliveryAddress, trackNumber) {
+export async function updateOrder(orderId, customerId, date, deliveryAddress, trackNumber) {
     const [result] = await connection.execute(
-        'UPDATE orders SET id_customer = ?, order_date = ?, delivery_address = ?, track_number = ? WHERE id = ?',
-        [customerId, orderDate, deliveryAddress, trackNumber, orderId]
+        'UPDATE orders SET customer_id = ?, date = ?, delivery_address = ?, track_number = ? WHERE id = ?',
+        [customerId, date, deliveryAddress, trackNumber, orderId]
     );
     return result;
 }

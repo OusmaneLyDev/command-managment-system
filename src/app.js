@@ -43,14 +43,14 @@ async function manageCustomers() {
 
     switch (action.action) {
         case 'Add a customer':
-            const { customerName, email, phone, address } = await inquirer.prompt([
+            const {name, email, phone, address } = await inquirer.prompt([
                 { type: 'input', name: 'name', message: 'Customer name:' },
                 { type: 'input', name: 'email', message: 'Customer email:' },
                 { type: 'input', name: 'phone', message: 'Customer phone:' },
                 { type: 'input', name: 'address', message: 'Customer address:' }
             ]);
             try {
-                await addCustomer(customerName, email, phone, address);
+                await addCustomer(name, email, phone, address);
                 console.log('Customer added successfully.');
             } catch (error) {
                 console.error('Error adding customer:', error);
@@ -64,7 +64,7 @@ async function manageCustomers() {
             }
             break;
         case 'Update a customer':
-            const { id, newCustomerName, newEmail, newPhone, newAddress } = await inquirer.prompt([
+            const { id, newName, newEmail, newPhone, newAddress } = await inquirer.prompt([
                 { type: 'number', name: 'id', message: 'ID of the customer to update:' },
                 { type: 'input', name: 'newName', message: 'New customer name:' },
                 { type: 'input', name: 'newEmail', message: 'New email:' },
@@ -72,7 +72,7 @@ async function manageCustomers() {
                 { type: 'input', name: 'newAddress', message: 'New address:' }
             ]);
             try {
-                await updateCustomer(id, newCustomerName, newEmail, newPhone, newAddress);
+                await updateCustomer(id, newName, newEmail, newPhone, newAddress);
                 console.log('Customer updated successfully.');
             } catch (error) {
                 console.error('Error updating customer:', error);
@@ -109,29 +109,29 @@ async function manageOrders() {
 
     switch (action.action) {
         case 'Add an order':
-            const { customerId, orderDate, deliveryAddress, trackNumber, status } = await inquirer.prompt([
+            const { customerId, date, deliveryAddress, trackNumber, status } = await inquirer.prompt([
                 { type: 'number', name: 'customerId', message: 'Customer ID:' },
-                { type: 'input', name: 'orderDate', message: 'Order date (YYYY-MM-DD):' },
+                { type: 'input', name: 'date', message: 'Order date (YYYY-MM-DD):' },
                 { type: 'input', name: 'deliveryAddress', message: 'Order deliveryAddress:' },
                 { type: 'input', name: 'trackNumber', message: 'Order trackNumber:' },
                 { type: 'list', name: 'status', message: 'Order status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
             ]);
-            await addOrder(customerId, orderDate, deliveryAddress, trackNumber, status);
+            await addOrder(customerId, date, deliveryAddress, trackNumber, status);
             console.log('Order added successfully.');
             break;
         case 'List orders':
             await listOrders();
             break;
         case 'Update an order':
-            const { idOrder, newCustomerId, newOrderDate, newDeliveryAddress, newTrackNumber, newStatus } = await inquirer.prompt([
+            const { idOrder, newCustomerId, newDate, newDeliveryAddress, newTrackNumber, newStatus } = await inquirer.prompt([
                 { type: 'number', name: 'idOrder', message: 'ID of the order to update:' },
                 { type: 'number', name: 'newCustomerId', message: 'Customer ID:' },
-                { type: 'input', name: 'newOrderDate', message: 'New order date (YYYY-MM-DD):' },
+                { type: 'input', name: 'newDate', message: 'New order date (YYYY-MM-DD):' },
                 { type: 'text', name: 'newDeliveryAddress', message: 'New newDeliveryAddress:' },
                 { type: 'number', name: 'newTrackNumber', message: 'New newTrackNumber:' },
                 { type: 'list', name: 'newStatus', message: 'New status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
             ]);
-            await updateOrder(idOrder, newCustomerId, newOrderDate, newDeliveryAddress, newTrackNumber, newStatus);
+            await updateOrder(idOrder, newCustomerId, newDate, newDeliveryAddress, newTrackNumber, newStatus);
             console.log('Order updated successfully.');
             break;
         case 'Delete an order':
@@ -160,29 +160,27 @@ async function managePayments() {
 
     switch (action.action) {
         case 'Add a payment':
-            const { orderId, productId, amount, paymentDate, paymentMethod } = await inquirer.prompt([
+            const { orderId, amount, date, paymentMethod } = await inquirer.prompt([
                 { type: 'number', name: 'orderId', message: 'Order ID:' },
-                { type: 'number', name: 'productId', message: 'Product ID:' }, 
                 { type: 'number', name: 'amount', message: 'Payment amount:' },
-                { type: 'input', name: 'paymentDate', message: 'Payment date (YYYY-MM-DD):' },
+                { type: 'input', name: 'date', message: 'Payment date (YYYY-MM-DD):' },
                 { type: 'list', name: 'paymentMethod', message: 'Payment method:', choices: ['Card', 'Cash', 'Bank Transfer'] }
             ]);
-            await addPayment(orderId, productId, amount, paymentDate, paymentMethod);          
+            await addPayment(orderId, amount, date, paymentMethod);          
             console.log('Payment added successfully.');
             break;
         case 'List payments':
             await listPayments();
             break;
         case 'Update a payment':
-            const { idPayment, newProductId, newOrderId, newAmount, newPaymentDate, newPaymentMethod } = await inquirer.prompt([
+            const { idPayment, newOrderId, newAmount, newDate, newPaymentMethod } = await inquirer.prompt([
                 { type: 'number', name: 'idPayment', message: 'ID of the payment to update:' },
-                { type: 'number', name: 'newProductId', message: 'Product ID:' },
                 { type: 'number', name: 'newOrderId', message: 'Order ID:' },
                 { type: 'number', name: 'newAmount', message: 'New amount:' },
-                { type: 'input', name: 'newPaymentDate', message: 'New payment date (YYYY-MM-DD):' },
+                { type: 'input', name: 'newDate', message: 'New payment date (YYYY-MM-DD):' },
                 { type: 'list', name: 'newPaymentMethod', message: 'New payment method:', choices: ['Card', 'Transfer', 'Check'] }
             ]);
-            await updatePayment(idPayment, newProductId, newOrderId, newAmount, newPaymentDate, newPaymentMethod);
+            await updatePayment(idPayment, newOrderId, newAmount, newDate, newPaymentMethod);
             console.log('Payment updated successfully.');
             break;
         case 'Delete a payment':
@@ -211,8 +209,8 @@ async function manageProducts() {
 
     switch (action.action) {
         case 'Add a product':
-            const { productName, description, price, stock, category, barcode, status } = await inquirer.prompt([
-                { type: 'input', name: 'productName', message: 'Product name:' },
+            const { name, description, price, stock, category, barcode, status } = await inquirer.prompt([
+                { type: 'input', name: 'name', message: 'Product name:' },
                 { type: 'input', name: 'description', message: 'Product description:' },
                 { type: 'number', name: 'price', message: 'Product price:' },
                 { type: 'number', name: 'stock', message: 'Stock quantity:' },
@@ -220,7 +218,7 @@ async function manageProducts() {
                 { type: 'input', name: 'barcode', message: 'Product barcode:' },
                 { type: 'input', name: 'status', message: 'Product status:' }
             ]);
-            await addProduct(productName, description, price, stock, category, barcode, status);
+            await addProduct(name, description, price, stock, category, barcode, status);
             console.log('Product added successfully.');
             break;
 
@@ -229,9 +227,9 @@ async function manageProducts() {
             break;
 
         case 'Update a product':
-            const { idProduct, newProductName, newDescription, newPrice, newStock, newCategory, newBarcode, newStatus } = await inquirer.prompt([
+            const { idProduct, newName, newDescription, newPrice, newStock, newCategory, newBarcode, newStatus } = await inquirer.prompt([
                 { type: 'number', name: 'idProduct', message: 'ID of the product to update:' },
-                { type: 'input', name: 'newProductName', message: 'New product name:' },
+                { type: 'input', name: 'newName', message: 'New product name:' },
                 { type: 'input', name: 'newDescription', message: 'New description:' },
                 { type: 'number', name: 'newPrice', message: 'New price:' },
                 { type: 'number', name: 'newStock', message: 'New stock quantity:' },
@@ -239,7 +237,7 @@ async function manageProducts() {
                 { type: 'input', name: 'newBarcode', message: 'New product barcode:' },
                 { type: 'input', name: 'newStatus', message: 'New product status:' }
             ]);
-            await updateProduct(idProduct, newProductName, newDescription, newPrice, newStock, newCategory, newBarcode, newStatus);
+            await updateProduct(idProduct, newName, newDescription, newPrice, newStock, newCategory, newBarcode, newStatus);
             console.log('Product updated successfully.');
             break;
 
@@ -250,11 +248,17 @@ async function manageProducts() {
             await deleteProduct(idToDelete);
             console.log('Product deleted successfully.');
             break;
-
-        case 'Back':
-            console.log('Going back to the main menu.');
-            break;
+            case 'Back':
+            return mainMenu();
     }
+    return manageProducts();
 }
+            
+
+//         case 'Back':
+//             console.log('Going back to the main menu.');
+//             break;
+//     }
+// }
 
 mainMenu();

@@ -1,9 +1,9 @@
 import connection from '../db.js';
 
-export async function addPayment(orderId, amount, productId, paymentDate, paymentMethod) {
+export async function addPayment(orderId, amount, date, paymentMethod) {
     const [result] = await connection.execute(
-        'INSERT INTO payments (order_id, product_id, amount, payment_date, payment_method) VALUES (?, ?, ?, ?, ?)',
-        [orderId, productId, amount, paymentDate, paymentMethod]
+        'INSERT INTO payments (order_id, amount, date, payment_method) VALUES (?, ?, ?, ?)',
+        [orderId, amount, date, paymentMethod]
     );
     return result;
 }
@@ -13,10 +13,10 @@ export async function listPayments() {
     console.log(rows);
 }
 
-export async function updatePayment(paymentId, orderId, amount, paymentDate, paymentMethod) {
+export async function updatePayment(paymentId, orderId, amount, date, paymentMethod) {
     const [result] = await connection.execute(
-        'UPDATE payments SET order_id = ?, amount = ?, payment_date = ?, payment_method = ? WHERE id = ?',
-        [orderId, amount, paymentDate, paymentMethod, paymentId]
+        'UPDATE payments SET order_id = ?, amount = ?, date = ?, payment_method = ? WHERE id = ?',
+        [orderId, amount, date, paymentMethod, paymentId]
     );
     return result;
 }

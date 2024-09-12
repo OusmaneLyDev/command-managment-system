@@ -1,10 +1,10 @@
 import connection from '../db.js';
 
 // Ajouter un produit
-export async function addProduct(productName, description, price, stock, category, barcode, status) {
+export async function addProduct(name, description, price, stock, category, barcode, status) {
     const [result] = await connection.execute(
-        'INSERT INTO products (product_name, description, price, stock, category, barcode, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [productName, description, price, stock, category, barcode, status]
+        'INSERT INTO products (name, description, price, stock, category, barcode, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [name, description, price, stock, category, barcode, status]
     );
     return result;
 }
@@ -16,10 +16,10 @@ export async function listProducts() {
 }
 
 // Mettre à jour un produit
-export async function updateProduct(productId, productName, description, price, stock, category, barcode, status) {
+export async function updateProduct(productId, name, description, price, stock, category, barcode, status) {
     const [result] = await connection.execute(
         'UPDATE products SET product_name = ?, description = ?, price = ?, stock = ?, category = ?, barcode = ?, status = ? WHERE id = ?',
-        [productName, description, price, stock, category, barcode, status, productId]
+        [name, description, price, stock, category, barcode, status, productId]
     );
     return result;
 }

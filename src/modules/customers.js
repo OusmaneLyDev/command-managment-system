@@ -1,15 +1,15 @@
 import connection from '../db.js';
 
-export async function addCustomer(customerName, email, phone, address) {
+export async function addCustomer(name, email, phone, address) {
     try {
-        customerName = customerName || null;
+        name = name || null;
         email = email || null;
         phone = phone || null;
         address = address || null;
 
         const [result] = await connection.execute(
-            'INSERT INTO customers (customer_name, email, phone, address) VALUES (?, ?, ?, ?)',
-            [customerName, email, phone, address]
+            'INSERT INTO customers (name, email, phone, address) VALUES (?, ?, ?, ?)',
+            [name, email, phone, address]
         );
         return result;
     } catch (error) {
@@ -30,11 +30,11 @@ export async function listCustomers() {
     }
 }
 
-export async function updateCustomer(id, customerName, phone, email, address) {
+export async function updateCustomer(id, name, phone, email, address) {
     try {
         const [result] = await connection.execute(
-            'UPDATE customers SET name = ?, email = ?, address = ? WHERE id = ?',
-            [customerName, email, phone, address, id]
+            'UPDATE customers SET name = ?, phone = ?, email = ?, address = ? WHERE id = ?',
+            [name, phone, email, address, id]
         );
         return result;
     } catch (error) {
@@ -42,6 +42,7 @@ export async function updateCustomer(id, customerName, phone, email, address) {
         throw error;
     }
 }
+
 
 export async function deleteCustomer(id) {
     try {

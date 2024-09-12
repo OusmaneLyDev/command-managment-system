@@ -1,4 +1,4 @@
-# ABC Corporation - Command Management System
+# Command Management System
 
 ## Description
 
@@ -33,13 +33,8 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
     ```bash
     npm install
 
-3. **Configurer la base de donnée**
 
-Assurez-vous que votre base de données MySQL est active. Utilisez le fichier SQL fourni (db/schema.sql) pour générer les tables :
-
-
-
-1. **Lancer l'application**
+3. **Lancer l'application**
 
     ```bash
     npm start
@@ -54,32 +49,6 @@ Assurez-vous que votre base de données MySQL est active. Utilisez le fichier SQ
 - **Purchase Order** : Gère les achats de commande avec les détails des produits achetés, les quantités, et les clients associés.
   
 - **Payment** : Gère les paiements des commandes, et les types de paiements.
-
-## Fonctionnalités principales
-
-### Gestion des clients
-- Ajouter un client
-- Afficher la liste des clients
-- Mettre à jour un client
-- Supprimer un client
-
-### Gestion des commandes
-- Ajouter une commande
-- Afficher la liste des commandes
-- Mettre à jour une commande
-- Supprimer une commande
-
-### Gestion des paiements
-- Ajouter un paiement
-- Afficher la liste des paiements
-- Mettre à jour un paiement
-- Supprimer un paiement
-
-### Gestion des produits
-- Ajouter un produit
-- Afficher la liste des produits
-- Mettre à jour un produit
-- Supprimer un produit
 
 
 ## Auteur
