@@ -1,4 +1,4 @@
-# ABC Corporation 
+# ABC Corporation - Command Management System
 
 ## Description
 
@@ -26,7 +26,7 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
 
    ```bash
    git clone https://github.com/OusmaneLyDev/abc_corporation-app-nodejs.git
-   cd abc-corporation
+   cd abc-corporation-app-nodejs
 
 2. **Installer les dépendances**
 
@@ -37,59 +37,23 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
 
 Assurez-vous que votre base de données MySQL est active. Utilisez le fichier SQL fourni (db/schema.sql) pour générer les tables :
 
-CREATE DATABASE abc_corporation;
-USE abc_corporation;
-
-CREATE TABLE customers (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
-    email VARCHAR(255),
-    phone VARCHAR(20),
-    address VARCHAR(255)
-);
-
-CREATE TABLE products (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    product_name VARCHAR(255),
-    description TEXT,
-    price DECIMAL(10,2),
-    stock INT,
-    category VARCHAR(255),
-    barcode VARCHAR(255),
-    status VARCHAR(255)
-);
-
-CREATE TABLE orders (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    customer_id INT,
-    order_date DATE,
-    delivery_address VARCHAR(255),
-    track_number VARCHAR(255),
-    status VARCHAR(255),
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
-);
-
-CREATE TABLE payments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    order_id INT,
-    product_id INT,
-    amount DECIMAL(10,2),
-    payment_date DATE,
-    payment_method VARCHAR(255),
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
 
 
-5. **Lancer l'application**
+1. **Lancer l'application**
 
     ```bash
-    npm install
+    npm start
     ```
 
-## Utilisation
+## Modules
 
-Une fois l'application lancée, suivez les instructions dans la console pour naviguer entre les différentes options.
+- **Customer** : Gère les informations relatives aux clients tels que l'affichage de la liste, l'ajout, la suppression, et la mise à jour de clients.
+  
+- **Product** : Permet de gérer les produits disponibles dans le magasin.
+  
+- **Purchase Order** : Gère les achats de commande avec les détails des produits achetés, les quantités, et les clients associés.
+  
+- **Payment** : Gère les paiements des commandes, et les types de paiements.
 
 ## Fonctionnalités principales
 
@@ -117,9 +81,6 @@ Une fois l'application lancée, suivez les instructions dans la console pour nav
 - Mettre à jour un produit
 - Supprimer un produit
 
-## Gestion des erreurs
-- Validation des entrées : vérification des données avant enregistrement.
-- Gestion des exceptions : affichage de messages en cas d'erreurs (connexion à la base de données, données non valides, etc.).
 
 ## Auteur
 
