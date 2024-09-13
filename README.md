@@ -24,8 +24,8 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
 1. **Cloner le projet**
 
    ```bash
-   git clone https://github.com/OusmaneLyDev/abc_corporation-app-nodejs.git
-   cd abc-corporation-app-nodejs
+   git clone https://github.com/OusmaneLyDev/command-managment-system.git
+   cd command-managment-system
 
 2. **Installer les dépendances**
 
