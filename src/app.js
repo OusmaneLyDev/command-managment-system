@@ -116,24 +116,47 @@ async function manageOrders() {
                 { type: 'input', name: 'trackNumber', message: 'Order trackNumber:' },
                 { type: 'list', name: 'status', message: 'Order status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
             ]);
-            await addOrder(customerId, date, deliveryAddress, trackNumber, status);
-            console.log('Order added successfully.');
+
+            let orderDetails = [];
+            let addMoreDetails = true;
+
+            while (addMoreDetails) {
+                const { productId, quantity, price } = await inquirer.prompt([
+                    { type: 'number', name: 'productId', message: 'Product ID:' },
+                    { type: 'number', name: 'quantity', message: 'Quantity:' },
+                    { type: 'number', name: 'price', message: 'Price per unit:' }
+                ]);
+
+                orderDetails.push({ productId, quantity, price });
+
+                const { addMore } = await inquirer.prompt([
+                    { type: 'confirm', name: 'addMore', message: 'Would you like to add another product?' }
+                ]);
+
+                addMoreDetails = addMore;
+            }
+
+            await addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails);
+            console.log('Order and details added successfully.');
             break;
+
         case 'List orders':
             await listOrders();
             break;
+
         case 'Update an order':
             const { idOrder, newCustomerId, newDate, newDeliveryAddress, newTrackNumber, newStatus } = await inquirer.prompt([
                 { type: 'number', name: 'idOrder', message: 'ID of the order to update:' },
                 { type: 'number', name: 'newCustomerId', message: 'Customer ID:' },
                 { type: 'input', name: 'newDate', message: 'New order date (YYYY-MM-DD):' },
-                { type: 'text', name: 'newDeliveryAddress', message: 'New newDeliveryAddress:' },
-                { type: 'number', name: 'newTrackNumber', message: 'New newTrackNumber:' },
+                { type: 'text', name: 'newDeliveryAddress', message: 'New delivery address:' },
+                { type: 'input', name: 'newTrackNumber', message: 'New track number:' },
                 { type: 'list', name: 'newStatus', message: 'New status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
             ]);
             await updateOrder(idOrder, newCustomerId, newDate, newDeliveryAddress, newTrackNumber, newStatus);
             console.log('Order updated successfully.');
             break;
+
         case 'Delete an order':
             const { idOrderToDelete } = await inquirer.prompt([
                 { type: 'number', name: 'idOrderToDelete', message: 'ID of the order to delete:' }
@@ -141,11 +164,13 @@ async function manageOrders() {
             await deleteOrder(idOrderToDelete);
             console.log('Order deleted successfully.');
             break;
+
         case 'Back':
             return mainMenu();
     }
     return manageOrders();
 }
+
 
 // Manage Payments
 async function managePayments() {
