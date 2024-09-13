@@ -25,3 +25,4 @@ export async function deleteOrder(orderId) {
     const [result] = await connection.execute('DELETE FROM orders WHERE id = ?', [orderId]);
     return result;
 }
+

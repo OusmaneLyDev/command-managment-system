@@ -255,10 +255,6 @@ async function manageProducts() {
 }
             
 
-//         case 'Back':
-//             console.log('Going back to the main menu.');
-//             break;
-//     }
-// }
+
 
 mainMenu();
