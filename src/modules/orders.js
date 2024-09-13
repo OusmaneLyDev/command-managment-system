@@ -1,4 +1,5 @@
 import connection from '../db.js';
+import inquirer from 'inquirer';
 
 // Add Order with details
 export async function addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails) {
@@ -19,14 +20,74 @@ export async function addOrder(customerId, date, deliveryAddress, trackNumber, s
     return result;
 }
 
+// Fonction pour lister les commandes
 export async function listOrders() {
-    const [rows] = await connection.execute(`
+    const [orders] = await connection.execute(`
+        SELECT o.id, o.customer_id, o.date, o.delivery_address, o.track_number, o.status
+        FROM orders o
+    `);
+
+    console.log("\nAvailable Orders:");
+    orders.forEach(order => {
+        console.log(`Order ID: ${order.id}, Customer ID: ${order.customer_id}, Date: ${order.date}, Status: ${order.status}`);
+    });
+
+    // Demande à l'utilisateur ce qu'il souhaite faire
+    const { action } = await inquirer.prompt([
+        { 
+            type: 'list', 
+            name: 'action', 
+            message: 'What would you like to do?', 
+            choices: ['View details of a specific order', 'View details of all orders'] 
+        }
+    ]);
+
+    if (action === 'View details of a specific order') {
+        await viewSpecificOrderDetails(orders);
+    } else if (action === 'View details of all orders') {
+        await viewAllOrderDetails();
+    }
+}
+
+// Fonction pour afficher les détails d'une commande spécifique
+async function viewSpecificOrderDetails(orders) {
+    const { selectedOrderId } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'selectedOrderId',
+            message: 'Select an order to view details:',
+            choices: orders.map(order => ({ name: `Order ID: ${order.id}`, value: order.id }))
+        }
+    ]);
+
+    // Récupérer et afficher les détails de la commande sélectionnée
+    const [orderDetails] = await connection.execute(`
         SELECT o.*, od.product_id, od.quantity, od.price
         FROM orders o
         LEFT JOIN order_details od ON o.id = od.order_id
-    `);
-    console.log(rows);
+        WHERE o.id = ?
+    `, [selectedOrderId]);
+
+    console.log(`\nDetails of Order ID: ${selectedOrderId}`);
+    orderDetails.forEach(detail => {
+        console.log(`Product ID: ${detail.product_id}, Quantity: ${detail.quantity}, Price: ${detail.price}`);
+    });
 }
+
+// Fonction pour afficher les détails de toutes les commandes
+async function viewAllOrderDetails() {
+    const [allDetails] = await connection.execute(`
+        SELECT o.id, o.customer_id, o.date, o.delivery_address, o.track_number, o.status, od.product_id, od.quantity, od.price
+        FROM orders o
+        LEFT JOIN order_details od ON o.id = od.order_id
+    `);
+
+    console.log("\nDetails of All Orders:");
+    allDetails.forEach(detail => {
+        console.log(`Order ID: ${detail.id}, Customer ID: ${detail.customer_id}, Product ID: ${detail.product_id}, Quantity: ${detail.quantity}, Price: ${detail.price}`);
+    });
+}
+
 
 export async function updateOrder(orderId, customerId, date, deliveryAddress, trackNumber) {
     const [result] = await connection.execute(
