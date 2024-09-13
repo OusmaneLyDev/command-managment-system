@@ -17,7 +17,6 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
 - **Node.js** (v14 ou supérieure) : [Téléchargez ici](https://nodejs.org/)
 - **MySQL** (version la plus récente) : [Téléchargez ici](https://dev.mysql.com/downloads/installer/)
 - **npm** (installé avec Node.js)
-- **Inquirer.js** et **dotenv** (seront installés via npm)
 
 
 ## Installation
@@ -39,6 +38,13 @@ Avant de pouvoir utiliser l'application, assurez-vous d'avoir les éléments sui
     ```bash
     npm start
     ```
+
+
+
+4. **Configuration de la base de données :**
+
+Le fichier ./src/db.js contient la configuration nécessaire pour interagir avec la base de données et ses différentes tables. Avant de lancer l'application, il est necessaire de remplacer root par votre nom d'utilisateur et Fouiny0513 par votre mot de passe d'utilisateur dans ce fichier, pour pouvoir se connecter à la base de données en local.
+
 
 ## Modules
 
