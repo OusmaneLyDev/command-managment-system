@@ -1,18 +1,18 @@
 import connection from '../db.js';
 import inquirer from 'inquirer';
 
-// Add Order with details
+// Ajouter une commande avec des détails
 export async function addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails) {
     const [result] = await connection.execute(
-        'INSERT INTO orders (customer_id, date, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO purchase_orders (customer_id, date, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)',
         [customerId, date, deliveryAddress, trackNumber, status]
     );
-    const orderId = result.insertId; // Get the inserted order ID
+    const orderId = result.insertId; // Récupérer l'ID de la commande insérée
 
-    // Insert the order details
+    // Insérer les détails de la commande (s'ils existent)
     for (let detail of orderDetails) {
         await connection.execute(
-            'INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
+            'INSERT INTO order_details (purchase_order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
             [orderId, detail.productId, detail.quantity, detail.price]
         );
     }
@@ -23,8 +23,8 @@ export async function addOrder(customerId, date, deliveryAddress, trackNumber, s
 // Fonction pour lister les commandes
 export async function listOrders() {
     const [orders] = await connection.execute(`
-        SELECT o.id, o.customer_id, o.date, o.delivery_address, o.track_number, o.status
-        FROM orders o
+        SELECT po.id, po.customer_id, po.date, po.delivery_address, po.track_number, po.status
+        FROM purchase_orders po
     `);
 
     console.log("\nAvailable Orders:");
@@ -32,7 +32,7 @@ export async function listOrders() {
         console.log(`Order ID: ${order.id}, Customer ID: ${order.customer_id}, Date: ${order.date}, Status: ${order.status}`);
     });
 
-    // Demande à l'utilisateur ce qu'il souhaite faire
+    // Demander à l'utilisateur ce qu'il souhaite faire
     const { action } = await inquirer.prompt([
         { 
             type: 'list', 
@@ -62,10 +62,10 @@ async function viewSpecificOrderDetails(orders) {
 
     // Récupérer et afficher les détails de la commande sélectionnée
     const [orderDetails] = await connection.execute(`
-        SELECT o.*, od.product_id, od.quantity, od.price
-        FROM orders o
-        LEFT JOIN order_details od ON o.id = od.order_id
-        WHERE o.id = ?
+        SELECT po.*, od.product_id, od.quantity, od.price
+        FROM purchase_orders po
+        LEFT JOIN order_details od ON po.id = od.purchase_order_id
+        WHERE po.id = ?
     `, [selectedOrderId]);
 
     console.log(`\nDetails of Order ID: ${selectedOrderId}`);
@@ -77,9 +77,9 @@ async function viewSpecificOrderDetails(orders) {
 // Fonction pour afficher les détails de toutes les commandes
 async function viewAllOrderDetails() {
     const [allDetails] = await connection.execute(`
-        SELECT o.id, o.customer_id, o.date, o.delivery_address, o.track_number, o.status, od.product_id, od.quantity, od.price
-        FROM orders o
-        LEFT JOIN order_details od ON o.id = od.order_id
+        SELECT po.id, po.customer_id, po.date, po.delivery_address, po.track_number, po.status, od.product_id, od.quantity, od.price
+        FROM purchase_orders po
+        LEFT JOIN order_details od ON po.id = od.purchase_order_id
     `);
 
     console.log("\nDetails of All Orders:");
@@ -88,16 +88,17 @@ async function viewAllOrderDetails() {
     });
 }
 
-
-export async function updateOrder(orderId, customerId, date, deliveryAddress, trackNumber) {
+// Fonction pour mettre à jour une commande
+export async function updateOrder(orderId, customerId, date, deliveryAddress, trackNumber, status) {
     const [result] = await connection.execute(
-        'UPDATE orders SET customer_id = ?, date = ?, delivery_address = ?, track_number = ? WHERE id = ?',
-        [customerId, date, deliveryAddress, trackNumber, orderId]
+        'UPDATE purchase_orders SET customer_id = ?, date = ?, delivery_address = ?, track_number = ?, status = ? WHERE id = ?',
+        [customerId, date, deliveryAddress, trackNumber, status, orderId]
     );
     return result;
 }
 
+// Fonction pour supprimer une commande
 export async function deleteOrder(orderId) {
-    const [result] = await connection.execute('DELETE FROM orders WHERE id = ?', [orderId]);
+    const [result] = await connection.execute('DELETE FROM purchase_orders WHERE id = ?', [orderId]);
     return result;
 }
