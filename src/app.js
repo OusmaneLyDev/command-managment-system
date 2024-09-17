@@ -73,32 +73,46 @@ async function manageCustomers() {
                 console.error('Error listing customers:', error);
             }
             break;
-        case 'Update a customer':
-            const { id, newName, newEmail, newPhone, newAddress } = await inquirer.prompt([
-                { type: 'number', name: 'id', message: 'ID of the customer to update:' },
-                { type: 'input', name: 'newName', message: 'New customer name:' },
-                { type: 'input', name: 'newEmail', message: 'New email:', validate: validateEmail },
-                { type: 'input', name: 'newPhone', message: 'New phone:', validate: validatePhone },
-                { type: 'input', name: 'newAddress', message: 'New address:' }
-            ]);
-            try {
-                await updateCustomer(id, newName, newEmail, newPhone, newAddress);
-                console.log('Customer updated successfully.');
-            } catch (error) {
-                console.error('Error updating customer:', error);
-            }
-            break;
-        case 'Delete a customer':
-            const { idToDelete } = await inquirer.prompt([
-                { type: 'number', name: 'idToDelete', message: 'ID of the customer to delete:' }
-            ]);
-            try {
-                await deleteCustomer(idToDelete);
-                console.log('Customer deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting customer:', error);
-            }
-            break;
+ // Update a customer
+case 'Update a customer':
+    const customers = await listCustomers(); // Liste tous les clients
+    const { id, newName, newEmail, newPhone, newAddress } = await inquirer.prompt([
+        { type: 'number', name: 'id', message: 'ID of the customer to update:', validate: (input) => {
+            // Vérification si l'ID existe dans la liste des clients
+            const customerExists = customers.find(c => c.id === input);
+            return customerExists ? true : 'Customer ID not found. Please enter a valid ID.';
+        }},
+        { type: 'input', name: 'newName', message: 'New customer name:' },
+        { type: 'input', name: 'newEmail', message: 'New email:', validate: validateEmail },
+        { type: 'input', name: 'newPhone', message: 'New phone:', validate: validatePhone },
+        { type: 'input', name: 'newAddress', message: 'New address:' }
+    ]);
+    try {
+        await updateCustomer(id, newName, newEmail, newPhone, newAddress);
+        console.log('Customer updated successfully.');
+    } catch (error) {
+        console.error('Error updating customer:', error);
+    }
+    break;
+
+       // Delete a customer
+case 'Delete a customer':
+    const customersForDelete = await listCustomers(); // Liste tous les clients
+    const { idToDelete } = await inquirer.prompt([
+        { type: 'number', name: 'idToDelete', message: 'ID of the customer to delete:', validate: (input) => {
+            // Vérification si l'ID existe dans la liste des clients
+            const customerExists = customersForDelete.find(c => c.id === input);
+            return customerExists ? true : 'Customer ID not found. Please enter a valid ID.';
+        }}
+    ]);
+    try {
+        await deleteCustomer(idToDelete);
+        console.log('Customer deleted successfully.');
+    } catch (error) {
+        console.error('Error deleting customer:', error);
+    }
+    break;
+
         case 'Back':
             return mainMenu();
     }
