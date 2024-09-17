@@ -1,18 +1,8 @@
 import inquirer from 'inquirer';
-import validator from 'validator';
 import { addCustomer, listCustomers, updateCustomer, deleteCustomer } from './modules/customers.js';
 import { addOrder, listOrders, updateOrder, deleteOrder } from './modules/orders.js';
 import { addPayment, listPayments, updatePayment, deletePayment } from './modules/payments.js';
 import { addProduct, listProducts, updateProduct, deleteProduct } from './modules/products.js';
-
-function validateEmail(email) {
-    return validator.isEmail(email) || 'Please enter a valid email address';
-}
-
-function validatePhone(phone) {
-    const phonePattern = /^[0-9]+$/;
-    return phonePattern.test(phone) || 'Phone number must only contain digits';
-}
 
 // Main Menu
 async function mainMenu() {
@@ -53,10 +43,10 @@ async function manageCustomers() {
 
     switch (action.action) {
         case 'Add a customer':
-            const { name, email, phone, address } = await inquirer.prompt([
+            const {name, email, phone, address } = await inquirer.prompt([
                 { type: 'input', name: 'name', message: 'Customer name:' },
-                { type: 'input', name: 'email', message: 'Customer email:', validate: validateEmail },
-                { type: 'input', name: 'phone', message: 'Customer phone:', validate: validatePhone },
+                { type: 'input', name: 'email', message: 'Customer email:' },
+                { type: 'input', name: 'phone', message: 'Customer phone:' },
                 { type: 'input', name: 'address', message: 'Customer address:' }
             ]);
             try {
@@ -77,8 +67,8 @@ async function manageCustomers() {
             const { id, newName, newEmail, newPhone, newAddress } = await inquirer.prompt([
                 { type: 'number', name: 'id', message: 'ID of the customer to update:' },
                 { type: 'input', name: 'newName', message: 'New customer name:' },
-                { type: 'input', name: 'newEmail', message: 'New email:', validate: validateEmail },
-                { type: 'input', name: 'newPhone', message: 'New phone:', validate: validatePhone },
+                { type: 'input', name: 'newEmail', message: 'New email:' },
+                { type: 'input', name: 'newPhone', message: 'New phone:' },
                 { type: 'input', name: 'newAddress', message: 'New address:' }
             ]);
             try {
@@ -104,6 +94,7 @@ async function manageCustomers() {
     }
     return manageCustomers();
 }
+
 
 // Manage Orders
 async function manageOrders() {

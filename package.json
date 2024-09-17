@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "inquirer": "^9.0.0",
-    "mysql2": "^3.11.2"
+    "mysql2": "^3.11.2",
+    "validator": "^13.12.0"
   }
 }
