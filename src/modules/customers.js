@@ -18,7 +18,6 @@ export async function addCustomer(name, email, phone, address) {
     }
 }
 
-
 export async function listCustomers() {
     try {
         const [rows] = await connection.execute('SELECT * FROM customers');
@@ -43,13 +42,26 @@ export async function updateCustomer(id, name, phone, email, address) {
     }
 }
 
-
 export async function deleteCustomer(id) {
     try {
         const [result] = await connection.execute('DELETE FROM customers WHERE id = ?', [id]);
         return result;
     } catch (error) {
         console.error('Error deleting customer:', error);
+        throw error;
+    }
+}
+
+// Ajout de la fonction getCustomerById
+export async function getCustomerById(id) {
+    try {
+        const [rows] = await connection.execute('SELECT * FROM customers WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            throw new Error('Customer not found');
+        }
+        return rows[0];
+    } catch (error) {
+        console.error('Error retrieving customer by ID:', error);
         throw error;
     }
 }

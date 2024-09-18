@@ -88,6 +88,32 @@ async function viewAllOrderDetails() {
     });
 }
 
+// Fonction pour obtenir une commande par ID
+export async function getOrderById(orderId) {
+    try {
+        const [order] = await connection.execute(`
+            SELECT * FROM purchase_orders WHERE id = ?
+        `, [orderId]);
+
+        if (order.length === 0) {
+            console.log(`Order ID ${orderId} not found.`);
+            return null;
+        }
+
+        const [orderDetails] = await connection.execute(`
+            SELECT * FROM order_details WHERE purchase_order_id = ?
+        `, [orderId]);
+
+        return {
+            order: order[0],
+            details: orderDetails
+        };
+    } catch (error) {
+        console.error('Error fetching order by ID:', error);
+        throw error;
+    }
+}
+
 // Fonction pour mettre à jour une commande
 export async function updateOrder(orderId, customerId, date, deliveryAddress, trackNumber, status) {
     const [result] = await connection.execute(

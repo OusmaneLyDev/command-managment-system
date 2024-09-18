@@ -15,6 +15,26 @@ export async function listProducts() {
     console.log(rows);
 }
 
+// Obtenir un produit par ID
+export async function getProductById(productId) {
+    try {
+        const [rows] = await connection.execute(
+            'SELECT * FROM products WHERE id = ?',
+            [productId]
+        );
+        
+        if (rows.length === 0) {
+            console.log(`Product with ID ${productId} not found.`);
+            return null;
+        }
+
+        return rows[0];
+    } catch (error) {
+        console.error('Error fetching product by ID:', error);
+        throw error;
+    }
+}
+
 // Mettre à jour un produit
 export async function updateProduct(productId, name, description, price, stock, category, barcode, status) {
     const [result] = await connection.execute(
