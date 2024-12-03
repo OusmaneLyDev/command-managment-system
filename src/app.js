@@ -136,58 +136,55 @@ async function manageOrders() {
 
     switch (action.action) {
         case 'Add an order':
-            try {
-                const { customerId, date, deliveryAddress, trackNumber, status } = await inquirer.prompt([
-                    { type: 'number', name: 'customerId', message: 'Customer ID:' },
-                    { type: 'input', name: 'date', message: 'Order date (YYYY-MM-DD):' },
-                    { type: 'input', name: 'deliveryAddress', message: 'Order delivery address:' },
-                    { type: 'input', name: 'trackNumber', message: 'Order track number:' },
-                    { type: 'list', name: 'status', message: 'Order status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
-                ]);
+    try {
+        const { customerId, date, deliveryAddress, trackNumber, status } = await inquirer.prompt([
+            { type: 'number', name: 'customerId', message: 'Customer ID:' },
+            { type: 'input', name: 'date', message: 'Order date (YYYY-MM-DD):' },
+            { type: 'input', name: 'deliveryAddress', message: 'Order delivery address:' },
+            { type: 'input', name: 'trackNumber', message: 'Order track number:' },
+            { type: 'list', name: 'status', message: 'Order status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
+        ]);
 
-                const customer = await getCustomerById(customerId);
-                if (!customer) {
-                    throw new Error(`Customer with ID ${customerId} does not exist.`);
-                }
+        try {
+            const customer = await getCustomerById(customerId);
+            console.log(`Client vérifié : ${customer.name}`);
+        } catch (error) {
+            console.error(`Erreur : ${error.message}`);
+            return; // Arrête l'exécution si le client est introuvable
+        }
 
-                let orderDetails = [];
-                let addMoreDetails = true;
+        let orderDetails = [];
+        let addMoreDetails = true;
 
-                while (addMoreDetails) {
-                    const { productId, quantity, price } = await inquirer.prompt([
-                        { type: 'number', name: 'productId', message: 'Product ID:' },
-                        { type: 'number', name: 'quantity', message: 'Quantity:', validate: validateNumber },
-                        { type: 'number', name: 'price', message: 'Price per unit:', validate: validateNumber }
-                    ]);
+        while (addMoreDetails) {
+            const { productId, quantity, price } = await inquirer.prompt([
+                { type: 'number', name: 'productId', message: 'Product ID:' },
+                { type: 'number', name: 'quantity', message: 'Quantity:' },
+                { type: 'number', name: 'price', message: 'Price per unit:' }
+            ]);
 
-                    const productExists = await doesProductExist(productId);
-                    if (!productExists) {
-                        throw new Error(`Product with ID ${productId} does not exist.`);
-                    }
-
-                    orderDetails.push({ productId, quantity, price });
-
-                    const { addMore } = await inquirer.prompt([
-                        { type: 'confirm', name: 'addMore', message: 'Would you like to add another product?' }
-                    ]);
-
-                    addMoreDetails = addMore;
-                }
-
-                await addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails);
-                console.log('Order and details added successfully.');
-            } catch (error) {
-                console.error('Error adding order:', error.message);
+            const productExists = await doesProductExist(productId);
+            if (!productExists) {
+                console.error(`Erreur : Le produit avec l'ID ${productId} n'existe pas.`);
+                continue;
             }
-            break;
 
-        case 'List orders':
-            try {
-                await listOrders();
-            } catch (error) {
-                console.error('Error listing orders:', error.message);
-            }
-            break;
+            orderDetails.push({ productId, quantity, price });
+
+            const { addMore } = await inquirer.prompt([
+                { type: 'confirm', name: 'addMore', message: 'Ajouter un autre produit ?' }
+            ]);
+
+            addMoreDetails = addMore;
+        }
+
+        await addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails);
+        console.log('Commande ajoutée avec succès.');
+    } catch (error) {
+        console.error(`Erreur lors de l'ajout de la commande : ${error.message}`);
+    }
+    break;
+
 
         case 'Update an order':
             try {
@@ -212,18 +209,23 @@ async function manageOrders() {
             }
             break;
 
-        case 'Delete an order':
-            try {
-                const { idOrderToDelete } = await inquirer.prompt([
-                    { type: 'number', name: 'idOrderToDelete', message: 'ID of the order to delete:' }
-                ]);
-
-                await deleteOrder(idOrderToDelete);
-                console.log('Order deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting order:', error.message);
-            }
-            break;
+            case 'Delete an order':
+                try {
+                    const { idOrderToDelete } = await inquirer.prompt([
+                        { type: 'number', name: 'idOrderToDelete', message: 'ID of the order to delete:' }
+                    ]);
+            
+                    const affectedRows = await deleteOrder(idOrderToDelete);
+                    if (affectedRows > 0) {
+                        console.log('Order deleted successfully.');
+                    } else {
+                        console.log('No order found with the provided ID.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting order:', error.message);
+                }
+                break;
+            
 
         case 'Back':
             return mainMenu();
@@ -294,18 +296,27 @@ async function managePayments() {
             }
             break;
 
-        case 'Delete a payment':
-            try {
-                const { idPaymentToDelete } = await inquirer.prompt([
-                    { type: 'number', name: 'idPaymentToDelete', message: 'ID of the payment to delete:' }
-                ]);
-
-                await deletePayment(idPaymentToDelete);
-                console.log('Payment deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting payment:', error.message);
-            }
-            break;
+            case 'Delete a payment':
+                try {
+                    const { idPaymentToDelete } = await inquirer.prompt([
+                        { type: 'number', name: 'idPaymentToDelete', message: 'ID of the payment to delete:' }
+                    ]);
+            
+                    const result = await deletePayment(idPaymentToDelete);
+            
+                    // Si la suppression a réussi, affichez le message de succès
+                    if (result.affectedRows > 0) {
+                        console.log('Payment deleted successfully.');
+                    }
+                } catch (error) {
+                    if (error.message === 'Payment not found.') {
+                        console.error('No payment found with that ID.');
+                    } else {
+                        console.error('Error deleting payment:', error.message);
+                    }
+                }
+                break;
+            
 
         case 'Back':
             return mainMenu();

@@ -44,8 +44,18 @@ export async function updatePayment(paymentId, purchaseOrderId, amount, date, pa
     return result;
 }
 
-// Supprimer un paiement
 export async function deletePayment(paymentId) {
-    const [result] = await connection.execute('DELETE FROM payments WHERE id = ?', [paymentId]);
-    return result;
+    try {
+        const [result] = await connection.execute('DELETE FROM payments WHERE id = ?', [paymentId]);
+        
+        // Si aucune ligne n'a été affectée (aucun paiement trouvé avec cet ID)
+        if (result.affectedRows === 0) {
+            throw new Error('Payment not found.');
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('Error deleting payment:', error.message);
+        throw error; // Relance l'erreur pour gestion en amont
+    }
 }

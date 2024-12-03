@@ -123,8 +123,7 @@ export async function updateOrder(orderId, customerId, date, deliveryAddress, tr
     return result;
 }
 
-// Fonction pour supprimer une commande
 export async function deleteOrder(orderId) {
     const [result] = await connection.execute('DELETE FROM purchase_orders WHERE id = ?', [orderId]);
-    return result;
+    return result.affectedRows; // Retourne le nombre de lignes affectées
 }
