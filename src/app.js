@@ -388,24 +388,23 @@ async function manageProducts() {
             }
             break;
 
-        case 'Delete a product':
-            try {
-                const { idToDelete } = await inquirer.prompt([
-                    { type: 'number', name: 'idToDelete', message: 'ID of the product to delete:' }
-                ]);
-
-                const productExistsForDelete = await doesProductExist(idToDelete);
-                if (!productExistsForDelete) {
-                    console.log('Product ID not found. Please enter a valid ID.');
-                    return manageProducts();
+            case 'Delete a product':
+                try {
+                    const { idToDelete } = await inquirer.prompt([
+                        { type: 'number', name: 'idToDelete', message: 'ID of the product to delete:' }
+                    ]);
+            
+                    const isDeleted = await deleteProduct(idToDelete);
+                    if (isDeleted) {
+                        console.log('Product deleted successfully.');
+                    } else {
+                        console.log(`Product with ID ${idToDelete} not found.`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting product:', error.message);
                 }
-
-                await deleteProduct(idToDelete);
-                console.log('Product deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting product:', error.message);
-            }
-            break;
+                break;
+            
 
         case 'Back':
             return mainMenu();

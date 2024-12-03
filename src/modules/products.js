@@ -44,8 +44,12 @@ export async function updateProduct(productId, name, description, price, stock, 
     return result;
 }
 
-// Supprimer un produit
 export async function deleteProduct(productId) {
-    const [result] = await connection.execute('DELETE FROM products WHERE id = ?', [productId]);
-    return result;
+    try {
+        const [result] = await connection.execute('DELETE FROM products WHERE id = ?', [productId]);
+        return result.affectedRows > 0; // Retourne true si une ligne a été supprimée
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        throw error; // Relance l'erreur pour gestion en amont
+    }
 }
