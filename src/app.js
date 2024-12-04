@@ -98,24 +98,37 @@ async function manageCustomers() {
             }
             break;
 
-        case 'Delete a customer':
-            const { idToDelete } = await inquirer.prompt([
-                { type: 'number', name: 'idToDelete', message: 'ID of the customer to delete:' }
-            ]);
-
-            const idToDeleteExists = await doesCustomerExist(idToDelete);
-            if (!idToDeleteExists) {
-                console.log('Customer ID not found. Please enter a valid ID.');
-                return manageCustomers();
+            case 'Delete a customer': {
+                const { idToDelete } = await inquirer.prompt([
+                    {
+                        type: 'number',
+                        name: 'idToDelete',
+                        message: 'ID of the customer to delete:',
+                        validate: (input) => {
+                            if (isNaN(input) || input <= 0) {
+                                return 'Please enter a valid ID (positive number).';
+                            }
+                            return true;
+                        },
+                    },
+                ]);
+            
+                try {
+                    const idToDeleteExists = await doesCustomerExist(idToDelete);
+                    if (!idToDeleteExists) {
+                        console.log(`No customer found with ID ${idToDelete}.`);
+                        return manageCustomers();
+                    }
+            
+                    await deleteCustomer(idToDelete);
+                } catch (error) {
+                    console.error(error.message); // Affiche uniquement le message de l'erreur
+                }
+                break;
             }
-
-            try {
-                await deleteCustomer(idToDelete);
-                console.log('Customer deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting customer:', error);
-            }
-            break;
+            
+            
+            
 
         case 'Back':
             return mainMenu();
