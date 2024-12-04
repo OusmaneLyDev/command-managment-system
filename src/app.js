@@ -99,33 +99,46 @@ async function manageCustomers() {
             break;
 
             case 'Delete a customer': {
-                const { idToDelete } = await inquirer.prompt([
-                    {
-                        type: 'number',
-                        name: 'idToDelete',
-                        message: 'ID of the customer to delete:',
-                        validate: (input) => {
-                            if (isNaN(input) || input <= 0) {
-                                return 'Please enter a valid ID (positive number).';
-                            }
-                            return true;
+                let idToDelete;
+            
+                while (true) {
+                    const { inputId } = await inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'inputId',
+                            message: 'ID of the customer to delete:',
+                            validate: (input) => {
+                                const id = parseInt(input, 10);
+                                if (isNaN(id) || id <= 0) {
+                                    return 'Please enter a valid ID (positive number).';
+                                }
+                                return true;
+                            },
                         },
-                    },
-                ]);
+                    ]);
             
-                try {
-                    const idToDeleteExists = await doesCustomerExist(idToDelete);
-                    if (!idToDeleteExists) {
-                        console.log(`No customer found with ID ${idToDelete}.`);
-                        return manageCustomers();
+                    // Convertir l'entrée en un nombre
+                    idToDelete = parseInt(inputId, 10);
+            
+                    try {
+                        // Vérifier si le client existe
+                        const idToDeleteExists = await doesCustomerExist(idToDelete);
+                        if (!idToDeleteExists) {
+                            console.log(`No customer found with ID ${idToDelete}. Returning to the menu.`);
+                            return manageCustomers(); // Retour au menu si l'ID est inexistant
+                        }
+            
+                        // Supprimer le client
+                        await deleteCustomer(idToDelete);
+                        console.log(`Customer with ID ${idToDelete} has been successfully deleted.`);
+                        return manageCustomers(); // Retour au menu après suppression
+                    } catch (error) {
+                        console.error('An error occurred:', error.message);
+                        return manageCustomers(); // Retour au menu en cas d'erreur
                     }
-            
-                    await deleteCustomer(idToDelete);
-                } catch (error) {
-                    console.error(error.message); // Affiche uniquement le message de l'erreur
                 }
-                break;
             }
+            
             
             
             
@@ -222,22 +235,45 @@ async function manageOrders() {
             }
             break;
 
-            case 'Delete an order':
-                try {
-                    const { idOrderToDelete } = await inquirer.prompt([
-                        { type: 'number', name: 'idOrderToDelete', message: 'ID of the order to delete:' }
+            case 'Delete an order': {
+                let idOrderToDelete;
+            
+                while (true) {
+                    const { inputId } = await inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'inputId',
+                            message: 'ID of the order to delete:',
+                            validate: (input) => {
+                                const id = parseInt(input, 10);
+                                if (isNaN(id) || id <= 0) {
+                                    return 'Please enter a valid ID (positive number).';
+                                }
+                                return true;
+                            },
+                        },
                     ]);
             
-                    const affectedRows = await deleteOrder(idOrderToDelete);
-                    if (affectedRows > 0) {
-                        console.log('Order deleted successfully.');
-                    } else {
-                        console.log('No order found with the provided ID.');
+                    // Convertir l'entrée en un nombre
+                    idOrderToDelete = parseInt(inputId, 10);
+            
+                    try {
+                        // Tenter de supprimer la commande
+                        const affectedRows = await deleteOrder(idOrderToDelete);
+            
+                        if (affectedRows > 0) {
+                            console.log(`Order with ID ${idOrderToDelete} deleted successfully.`);
+                        } else {
+                            console.log(`No order found with the ID ${idOrderToDelete}.`);
+                        }
+                        return manageOrders(); // Retour au menu après action
+                    } catch (error) {
+                        console.error('Error deleting order:', error.message);
+                        return manageOrders(); // Retour au menu en cas d'erreur
                     }
-                } catch (error) {
-                    console.error('Error deleting order:', error.message);
                 }
-                break;
+            }
+            
             
 
         case 'Back':
@@ -309,26 +345,49 @@ async function managePayments() {
             }
             break;
 
-            case 'Delete a payment':
-                try {
-                    const { idPaymentToDelete } = await inquirer.prompt([
-                        { type: 'number', name: 'idPaymentToDelete', message: 'ID of the payment to delete:' }
+            case 'Delete a payment': {
+                let idPaymentToDelete;
+            
+                while (true) {
+                    const { inputId } = await inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'inputId',
+                            message: 'ID of the payment to delete:',
+                            validate: (input) => {
+                                const id = parseInt(input, 10);
+                                if (isNaN(id) || id <= 0) {
+                                    return 'Please enter a valid ID (positive number).';
+                                }
+                                return true;
+                            },
+                        },
                     ]);
             
-                    const result = await deletePayment(idPaymentToDelete);
+                    // Convertir l'entrée en un nombre
+                    idPaymentToDelete = parseInt(inputId, 10);
             
-                    // Si la suppression a réussi, affichez le message de succès
-                    if (result.affectedRows > 0) {
-                        console.log('Payment deleted successfully.');
-                    }
-                } catch (error) {
-                    if (error.message === 'Payment not found.') {
-                        console.error('No payment found with that ID.');
-                    } else {
-                        console.error('Error deleting payment:', error.message);
+                    try {
+                        // Tenter de supprimer le paiement
+                        const result = await deletePayment(idPaymentToDelete);
+            
+                        if (result.affectedRows > 0) {
+                            console.log(`Payment with ID ${idPaymentToDelete} deleted successfully.`);
+                        } else {
+                            console.log(`No payment found with the ID ${idPaymentToDelete}.`);
+                        }
+                        return managePayments(); // Retour au menu après action
+                    } catch (error) {
+                        if (error.message === 'Payment not found.') {
+                            console.error('No payment found with that ID.');
+                        } else {
+                            console.error('Error deleting payment:', error.message);
+                        }
+                        return managePayments(); // Retour au menu en cas d'erreur
                     }
                 }
-                break;
+            }
+            
             
 
         case 'Back':
@@ -412,22 +471,45 @@ async function manageProducts() {
             }
             break;
 
-            case 'Delete a product':
-                try {
-                    const { idToDelete } = await inquirer.prompt([
-                        { type: 'number', name: 'idToDelete', message: 'ID of the product to delete:' }
+            case 'Delete a product': {
+                let idToDelete;
+            
+                while (true) {
+                    const { inputId } = await inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'inputId',
+                            message: 'ID of the product to delete:',
+                            validate: (input) => {
+                                const id = parseInt(input, 10);
+                                if (isNaN(id) || id <= 0) {
+                                    return 'Please enter a valid ID (positive number).';
+                                }
+                                return true;
+                            },
+                        },
                     ]);
             
-                    const isDeleted = await deleteProduct(idToDelete);
-                    if (isDeleted) {
-                        console.log('Product deleted successfully.');
-                    } else {
-                        console.log(`Product with ID ${idToDelete} not found.`);
+                    // Convertir l'entrée en un nombre
+                    idToDelete = parseInt(inputId, 10);
+            
+                    try {
+                        // Tenter de supprimer le produit
+                        const isDeleted = await deleteProduct(idToDelete);
+            
+                        if (isDeleted) {
+                            console.log(`Product with ID ${idToDelete} deleted successfully.`);
+                        } else {
+                            console.log(`No product found with ID ${idToDelete}.`);
+                        }
+                        return manageProducts(); // Retour au menu après action
+                    } catch (error) {
+                        console.error('Error deleting product:', error.message);
+                        return manageProducts(); // Retour au menu en cas d'erreur
                     }
-                } catch (error) {
-                    console.error('Error deleting product:', error.message);
                 }
-                break;
+            }
+            
             
 
         case 'Back':

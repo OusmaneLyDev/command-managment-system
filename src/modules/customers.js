@@ -46,15 +46,15 @@ export async function deleteCustomer(id) {
     try {
         const [result] = await connection.execute('DELETE FROM customers WHERE id = ?', [id]);
         if (result.affectedRows === 0) {
-            throw new Error(`Aucun client trouvé avec l'ID ${id}.`);
+            throw new Error(`No customer found with ID ${id}.`);
         }
-        console.log(`Le client avec l'ID ${id} a été supprimé avec succès.`);
         return result;
     } catch (error) {
-        console.error('Erreur lors de la suppression du client:', error.message);
-        throw error;
+        console.error('Error deleting customer:', error.message);
+        throw error; // Relance l'erreur pour qu'elle soit gérée par l'appelant
     }
 }
+
 
 
 export async function getCustomerById(id) {
