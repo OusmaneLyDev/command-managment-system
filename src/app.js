@@ -163,37 +163,83 @@ async function manageOrders() {
     switch (action.action) {
         case 'Add an order':
     try {
-        const { customerId, date, deliveryAddress, trackNumber, status } = await inquirer.prompt([
-            { type: 'number', name: 'customerId', message: 'Customer ID:' },
+        let customerId;
+        // Validation du Customer ID
+        while (true) {
+            const { inputCustomerId } = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'inputCustomerId',
+                    message: 'Customer ID:',
+                    validate: (input) => {
+                        const id = parseInt(input, 10);
+                        if (isNaN(id) || id <= 0) {
+                            return 'Customer ID must be a positive number.';
+                        }
+                        return true;
+                    }
+                }
+            ]);
+
+            customerId = parseInt(inputCustomerId, 10);
+
+            try {
+                const customer = await getCustomerById(customerId);
+                if (customer) {
+                    console.log(`Client vérifié : ${customer.name}`);
+                    break; // Customer ID validé
+                } else {
+                    console.log(`Customer with ID ${customerId} does not exist. Please try again.`);
+                }
+            } catch (error) {
+                console.log(`Erreur : ${error.message}`);
+            }
+        }
+
+        // Collecte des autres détails de la commande
+        const { date, deliveryAddress, trackNumber, status } = await inquirer.prompt([
             { type: 'input', name: 'date', message: 'Order date (YYYY-MM-DD):' },
             { type: 'input', name: 'deliveryAddress', message: 'Order delivery address:' },
             { type: 'input', name: 'trackNumber', message: 'Order track number:' },
             { type: 'list', name: 'status', message: 'Order status:', choices: ['Pending', 'Shipped', 'Delivered', 'Cancelled'] }
         ]);
 
-        try {
-            const customer = await getCustomerById(customerId);
-            console.log(`Client vérifié : ${customer.name}`);
-        } catch (error) {
-            console.error(`Erreur : ${error.message}`);
-            return; // Arrête l'exécution si le client est introuvable
-        }
-
         let orderDetails = [];
         let addMoreDetails = true;
 
         while (addMoreDetails) {
-            const { productId, quantity, price } = await inquirer.prompt([
-                { type: 'number', name: 'productId', message: 'Product ID:' },
+            let productId;
+            // Validation du Product ID
+            while (true) {
+                const { inputProductId } = await inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'inputProductId',
+                        message: 'Product ID:',
+                        validate: (input) => {
+                            const id = parseInt(input, 10);
+                            if (isNaN(id) || id <= 0) {
+                                return 'Product ID must be a positive number.';
+                            }
+                            return true;
+                        }
+                    }
+                ]);
+
+                productId = parseInt(inputProductId, 10);
+            
+                const productExists = await doesProductExist(productId);
+                if (productExists) {
+                    break; // Product ID validé
+                } else {
+                    console.log(`Product with ID ${productId} does not exist. Please try again.`);
+                }
+            }
+
+            const { quantity, price } = await inquirer.prompt([
                 { type: 'number', name: 'quantity', message: 'Quantity:' },
                 { type: 'number', name: 'price', message: 'Price per unit:' }
             ]);
-
-            const productExists = await doesProductExist(productId);
-            if (!productExists) {
-                console.error(`Erreur : Le produit avec l'ID ${productId} n'existe pas.`);
-                continue;
-            }
 
             orderDetails.push({ productId, quantity, price });
 
@@ -204,12 +250,14 @@ async function manageOrders() {
             addMoreDetails = addMore;
         }
 
+        // Ajout de la commande
         await addOrder(customerId, date, deliveryAddress, trackNumber, status, orderDetails);
         console.log('Commande ajoutée avec succès.');
     } catch (error) {
         console.error(`Erreur lors de l'ajout de la commande : ${error.message}`);
     }
     break;
+
 
 
         case 'Update an order':
